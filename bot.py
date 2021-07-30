@@ -1,33 +1,66 @@
 import os
-import telebot
 from dotenv import load_dotenv
+from telegram.ext import Updater
+from telegram.ext import CommandHandler
+from telegram.ext import MessageHandler, Filters
+import logging
 
 load_dotenv()
 
 token = os.getenv('TOKEN')
-words = ['hhh','ppp','kkk']
 
-bot = telebot.TeleBot(token, parse_mode=None)
+updater = Updater(token)
+dispatcher = updater.dispatcher
 
-@bot.message_handler(commands=['start'])
-def send_welcome(msg):
-	bot.send_message(msg.chat.id, 'Hey! I\'ll help you improve your vocabulary. \n/help for more info')
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-@bot.message_handler(commands=['help'])
-def send_help(msg):
-	bot.send_message(msg.chat.id, 'help info')
+words = []
 
-@bot.message_handler(commands=['wordlist'])
-def send_help(msg):
-	response = '\n'.join(words)
+def start(update, context):
+    chat_id = update.effective_chat.id
+    
+    response = "Hey! \n /help for more info"
 
-	bot.send_message(msg.chat.id, response)
+    context.bot.send_message(chat_id, response)
 
-@bot.message_handler(func=lambda m: True)
-def echo_all(msg):
-	if(not (msg.text.lower() in words)):
-		words.append(msg.text.lower())
+start_handler = CommandHandler('start', start)
+dispatcher.add_handler(start_handler)
 
-	bot.send_message(msg.chat.id, msg.text)
+def help(update, context):
+    chat_id = update.effective_chat.id
+    
+    response = "help info"
 
-bot.polling()
+    context.bot.send_message(chat_id, response)
+
+help_handler = CommandHandler('help', help)
+dispatcher.add_handler(help_handler)
+
+def wordlist(update, context):
+    chat_id = update.effective_chat.id
+    
+    if not words:
+        response = 'you have no words'
+    else: 
+        response = '\n'.join(words)
+
+    context.bot.send_message(chat_id, response)
+
+wordlist_handler = CommandHandler('wordlist', wordlist)
+dispatcher.add_handler(wordlist_handler)
+
+def echo(update, context):
+    chat_id = update.effective_chat.id
+
+    response = update.message.text
+
+    if(not (update.message.text.lower() in words)):
+        words.append(update.message.text.lower())
+
+    context.bot.send_message(chat_id, response)
+
+echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
+dispatcher.add_handler(echo_handler)
+
+updater.start_polling()
+updater.idle()
