@@ -77,6 +77,24 @@ def test(update, context):
 test_handler = CommandHandler('test', test)
 dispatcher.add_handler(test_handler)
 
+def delete(update, context):
+    chat_id = update.effective_chat.id
+
+    message_text = update.message.text.split(' ')
+
+    word = message_text[1] if len(message_text) >= 2 else ''
+
+    if(word.lower() in words):
+        words.remove(word.lower())
+        response = 'word deleted successfully!'
+    else:
+        response = 'there\'s no word in the /wordlist \n example: \'/delete house\''
+
+    context.bot.send_message(chat_id, response)
+
+delete_handler = CommandHandler('delete', delete)
+dispatcher.add_handler(delete_handler)
+
 def echo(update, context):
     chat_id = update.effective_chat.id
 
