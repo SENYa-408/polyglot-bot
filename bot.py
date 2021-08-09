@@ -82,7 +82,11 @@ def echo(update, context):
 
     response = update.message.text
 
-    if(not (update.message.text.lower() in words)):
+    if(update.message.text.lower() in words):
+        response = 'ERROR: word is already in the list'
+    elif(not(dictionary.synonym(update.message.text.lower()))):
+        response = 'ERROR: there\'s no word in the dictionary'
+    else:
         words.append(update.message.text.lower())
 
     context.bot.send_message(chat_id, response)
