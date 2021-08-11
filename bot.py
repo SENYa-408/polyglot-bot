@@ -6,7 +6,7 @@ from telegram.ext import MessageHandler, Filters
 import logging
 import random
 from googletrans import Translator 
-from PyDictionary import PyDictionary
+from nltk.corpus import wordnet
 
 load_dotenv()
 
@@ -18,9 +18,22 @@ dispatcher = updater.dispatcher
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 translator = Translator()
-dictionary = PyDictionary()
 
 words = []
+
+def get_synonyms(word):
+
+    if(not isinstance(word, str)):
+        return False
+
+    synonyms = []
+
+    for syn in wordnet.synsets(word):
+        for l in syn.lemmas():
+            if l.name() not in synonyms and l.name() != word and not '_' in l.name():
+                synonyms.append(l.name())
+
+    return synonyms
 
 def start(update, context):
     chat_id = update.effective_chat.id
@@ -60,7 +73,7 @@ def test(update, context):
     
     word = random.choice(words)
 
-    options = dictionary.synonym(word)
+    options = get_synonyms(word)
     del options[2:]
 
     options.append(word)
@@ -102,7 +115,7 @@ def echo(update, context):
 
     if(update.message.text.lower() in words):
         response = 'ERROR: word is already in the list'
-    elif(not(dictionary.synonym(update.message.text.lower()))):
+    elif(not(get_synonyms(update.message.text.lower()))):
         response = 'ERROR: there\'s no word in the dictionary'
     else:
         words.append(update.message.text.lower())
