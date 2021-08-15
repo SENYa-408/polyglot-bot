@@ -38,7 +38,7 @@ def get_synonyms(word):
 def start(update, context):
     chat_id = update.effective_chat.id
     
-    response = "Hey! \n /help for more info"
+    response = "Hey! I'm a polyglot bot and I'll help you remember new words :) \n test yourself whenever you want! \n /help for more info"
 
     context.bot.send_message(chat_id, response)
 
@@ -48,7 +48,7 @@ dispatcher.add_handler(start_handler)
 def help(update, context):
     chat_id = update.effective_chat.id
     
-    response = "help info"
+    response = "Help info: \n Current supported languages: \n ru -> en \n\n Type the word of the learning language to add it to your wordlist \n /wordlist - check your wordlist \n /test - test random word from your wordlist \n /delete *word* - delete word form your wordlist"
 
     context.bot.send_message(chat_id, response)
 
@@ -59,7 +59,7 @@ def wordlist(update, context):
     chat_id = update.effective_chat.id
     
     if not words:
-        response = 'you have no words'
+        response = 'Your wordlist is empty :( \n Type the word of the learning language to add it to your wordlist '
     else: 
         response = '\n'.join(words)
 
@@ -99,9 +99,9 @@ def delete(update, context):
 
     if(word.lower() in words):
         words.remove(word.lower())
-        response = 'word deleted successfully!'
+        response = 'The word has been successfully deleted!'
     else:
-        response = 'there\'s no word in the /wordlist \n example: \'/delete house\''
+        response = 'there\'s no ' + word + ' in the /wordlist \n example: \'/delete house\''
 
     context.bot.send_message(chat_id, response)
 
@@ -116,7 +116,7 @@ def echo(update, context):
     if(update.message.text.lower() in words):
         response = 'ERROR: word is already in the list'
     elif(not(get_synonyms(update.message.text.lower()))):
-        response = 'ERROR: there\'s no word in the dictionary'
+        response = 'ERROR: there\'s no ' + update.message.text + ' in the dictionary'
     else:
         words.append(update.message.text.lower())
 
