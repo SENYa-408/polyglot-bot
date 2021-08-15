@@ -7,7 +7,7 @@ import logging
 import random
 from googletrans import Translator 
 from nltk.corpus import wordnet
-
+from nltk.corpus import words
 load_dotenv()
 
 token = os.getenv('TOKEN')
@@ -19,7 +19,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 
 translator = Translator()
 
-words = []
+user_wordlist = []
 
 def get_synonyms(word):
 
@@ -58,10 +58,10 @@ dispatcher.add_handler(help_handler)
 def wordlist(update, context):
     chat_id = update.effective_chat.id
     
-    if not words:
+    if not user_wordlist:
         response = 'Your wordlist is empty :( \n Type the word of the learning language to add it to your wordlist '
     else: 
-        response = '\n'.join(words)
+        response = '\n'.join(user_wordlist)
 
     context.bot.send_message(chat_id, response)
 
@@ -71,7 +71,15 @@ dispatcher.add_handler(wordlist_handler)
 def test(update, context):
     chat_id = update.effective_chat.id
     
-    word = random.choice(words)
+    if(user_wordlist):
+        word = random.choice(user_wordlist)
+    else:
+        word = words.words()
+        random.shuffle(word)
+        for el in word:
+            if(get_synonyms(el)): 
+                word = el
+                break
 
     options = get_synonyms(word)
     del options[2:]
@@ -82,8 +90,8 @@ def test(update, context):
 
     correct_option_id = options.index(word)
 
-    for index, option in enumerate(options):
-        options[index] = translator.translate(option, dest='ru').text
+    # for index, option in enumerate(options):
+    #     options[index] = translator.translate(option, dest='ru').text
 
     context.bot.send_poll(chat_id, word, options, True, 'quiz', False, correct_option_id)
 
@@ -97,8 +105,8 @@ def delete(update, context):
 
     word = message_text[1] if len(message_text) >= 2 else ''
 
-    if(word.lower() in words):
-        words.remove(word.lower())
+    if(word.lower() in user_wordlist):
+        user_wordlist.remove(word.lower())
         response = 'The word has been successfully deleted!'
     else:
         response = 'there\'s no ' + word + ' in the /wordlist \n example: \'/delete house\''
@@ -113,12 +121,12 @@ def echo(update, context):
 
     response = update.message.text
 
-    if(update.message.text.lower() in words):
+    if(update.message.text.lower() in user_wordlist):
         response = 'ERROR: word is already in the list'
     elif(not(get_synonyms(update.message.text.lower()))):
         response = 'ERROR: there\'s no ' + update.message.text + ' in the dictionary'
     else:
-        words.append(update.message.text.lower())
+        user_wordlist.append(update.message.text.lower())
 
     context.bot.send_message(chat_id, response)
 
