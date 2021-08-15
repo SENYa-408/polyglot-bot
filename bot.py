@@ -5,9 +5,9 @@ from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler, Filters
 import logging
 import random
-from googletrans import Translator 
 from nltk.corpus import wordnet
 from nltk.corpus import words
+import requests
 load_dotenv()
 
 token = os.getenv('TOKEN')
@@ -16,8 +16,6 @@ updater = Updater(token)
 dispatcher = updater.dispatcher
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
-translator = Translator()
 
 user_wordlist = []
 
@@ -90,8 +88,13 @@ def test(update, context):
 
     correct_option_id = options.index(word)
 
-    # for index, option in enumerate(options):
-    #     options[index] = translator.translate(option, dest='ru').text
+    for index, option in enumerate(options):
+        url = 'https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=ru&q=' + option
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36'
+        }
+        res = requests.get(url, headers=headers).json()
+        options[index] = res['sentences'][0]['trans']
 
     context.bot.send_poll(chat_id, word, options, True, 'quiz', False, correct_option_id)
 
