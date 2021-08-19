@@ -1,13 +1,8 @@
 import os
 from dotenv import load_dotenv
-from telegram.ext import Updater
-from telegram.ext import CommandHandler
-from telegram.ext import MessageHandler, Filters
+from telegram.ext import Updater, CommandHandler, PollHandler, MessageHandler, Filters
 import logging
-import random
-from nltk.corpus import wordnet
-from nltk.corpus import words
-import requests
+import poll_controller
 load_dotenv()
 
 token = os.getenv('TOKEN')
@@ -16,22 +11,6 @@ updater = Updater(token)
 dispatcher = updater.dispatcher
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
-user_wordlist = []
-
-def get_synonyms(word):
-
-    if(not isinstance(word, str)):
-        return False
-
-    synonyms = []
-
-    for syn in wordnet.synsets(word):
-        for l in syn.lemmas():
-            if l.name() not in synonyms and l.name() != word and not '_' in l.name():
-                synonyms.append(l.name())
-
-    return synonyms
 
 def start(update, context):
     chat_id = update.effective_chat.id
@@ -56,10 +35,10 @@ dispatcher.add_handler(help_handler)
 def wordlist(update, context):
     chat_id = update.effective_chat.id
     
-    if not user_wordlist:
+    if not poll_controller.user_wordlist:
         response = 'Your wordlist is empty :( \n Type the word of the learning language to add it to your wordlist '
     else: 
-        response = '\n'.join(user_wordlist)
+        response = '\n'.join(poll_controller.user_wordlist)
 
     context.bot.send_message(chat_id, response)
 
@@ -69,37 +48,35 @@ dispatcher.add_handler(wordlist_handler)
 def test(update, context):
     chat_id = update.effective_chat.id
     
-    if(user_wordlist):
-        word = random.choice(user_wordlist)
-    else:
-        word = words.words()
-        random.shuffle(word)
-        for el in word:
-            if(get_synonyms(el)): 
-                word = el
-                break
-
-    options = get_synonyms(word)
-    del options[2:]
-
-    options.append(word)
-
-    random.shuffle(options)
-
-    correct_option_id = options.index(word)
-
-    for index, option in enumerate(options):
-        url = 'https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=auto&tl=ru&q=' + option
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.104 Safari/537.36'
-        }
-        res = requests.get(url, headers=headers).json()
-        options[index] = res['sentences'][0]['trans']
+    word, options, correct_option_id = poll_controller.create_options()
 
     context.bot.send_poll(chat_id, word, options, True, 'quiz', False, correct_option_id)
 
 test_handler = CommandHandler('test', test)
 dispatcher.add_handler(test_handler)
+
+def learned(update, context):
+    options = update.poll.options
+    correct_option_id = update.poll.correct_option_id
+
+    counter = 0
+    answer = False
+
+    for option in options:
+        if option.voter_count == 1 and correct_option_id == counter:
+            answer = option.text
+            break
+            
+        counter += 1
+
+    if answer:
+        poll_controller.user_learned_words.append(answer)
+
+    if answer in poll_controller.user_wordlist:
+        poll_controller.user_wordlist.remove(answer)
+
+learned_handler = PollHandler(learned, pass_chat_data=True, pass_user_data=True)
+dispatcher.add_handler(learned_handler)
 
 def delete(update, context):
     chat_id = update.effective_chat.id
@@ -108,8 +85,8 @@ def delete(update, context):
 
     word = message_text[1] if len(message_text) >= 2 else ''
 
-    if(word.lower() in user_wordlist):
-        user_wordlist.remove(word.lower())
+    if(word.lower() in poll_controller.user_wordlist):
+        poll_controller.user_wordlist.remove(word.lower())
         response = 'The word has been successfully deleted!'
     else:
         response = 'there\'s no ' + word + ' in the /wordlist \n example: \'/delete house\''
@@ -124,12 +101,12 @@ def echo(update, context):
 
     response = update.message.text
 
-    if(update.message.text.lower() in user_wordlist):
+    if(update.message.text.lower() in poll_controller.user_wordlist):
         response = 'ERROR: word is already in the list'
-    elif(not(get_synonyms(update.message.text.lower()))):
+    elif(not(poll_controller.get_synonyms(update.message.text.lower()))):
         response = 'ERROR: there\'s no ' + update.message.text + ' in the dictionary'
     else:
-        user_wordlist.append(update.message.text.lower())
+        poll_controller.user_wordlist.append(update.message.text.lower())
 
     context.bot.send_message(chat_id, response)
 
