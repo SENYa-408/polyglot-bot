@@ -48,9 +48,9 @@ dispatcher.add_handler(wordlist_handler)
 def test(update, context):
     chat_id = update.effective_chat.id
     
-    word, options, correct_option_id = poll_controller.create_options()
-
-    context.bot.send_poll(chat_id, word, options, True, 'quiz', False, correct_option_id)
+    word, options, correct_option_index = poll_controller.create_quiz()
+    print(word, options, correct_option_index)
+    context.bot.send_poll(chat_id, word, options, True, 'quiz', False, correct_option_index)
 
 test_handler = CommandHandler('test', test)
 dispatcher.add_handler(test_handler)
