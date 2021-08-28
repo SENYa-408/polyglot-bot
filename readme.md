@@ -23,9 +23,9 @@ Telegram bot to help you improve your vocabulary
 
 # Example
 
-![0-example]()
-![1-example]()
-![2-example]()
+![0-example](https://github.com/SENYa-408/julius-polyglot-bot/blob/main/readme-imgs/screenshot-0.jpg)
+![1-example](https://github.com/SENYa-408/julius-polyglot-bot/blob/main/readme-imgs/screenshot-1.jpg)
+![2-example](https://github.com/SENYa-408/julius-polyglot-bot/blob/main/readme-imgs/screenshot-2.jpg)
 
 # Install
 
