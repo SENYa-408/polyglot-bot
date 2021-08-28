@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from telegram.ext import Updater, CommandHandler, PollHandler, MessageHandler, Filters
 import logging
-import poll_controller
+import poll
 load_dotenv()
 
 token = os.getenv('TOKEN')
@@ -35,10 +35,10 @@ dispatcher.add_handler(help_handler)
 def wordlist(update, context):
     chat_id = update.effective_chat.id
     
-    if not poll_controller.user_wordlist:
+    if not poll.user_wordlist:
         response = 'Your wordlist is empty :( \n Type the word of the learning language to add it to your wordlist '
     else: 
-        response = '\n'.join(poll_controller.user_wordlist)
+        response = '\n'.join(poll.user_wordlist)
 
     context.bot.send_message(chat_id, response)
 
@@ -48,7 +48,7 @@ dispatcher.add_handler(wordlist_handler)
 def test(update, context):
     chat_id = update.effective_chat.id
     
-    word, options, correct_option_index = poll_controller.create_quiz()
+    word, options, correct_option_index = poll.create_quiz()
 
     context.bot.send_poll(chat_id, word, options, True, 'quiz', False, correct_option_index)
 
@@ -71,12 +71,12 @@ def learned(update, context):
         counter += 1
 
     if answer:
-        poll_controller.user_learned_words.append(word)
+        poll.user_learned_words.append(word)
 
-        if word in poll_controller.user_wordlist:
-            poll_controller.user_wordlist.remove(word)
+        if word in poll.user_wordlist:
+            poll.user_wordlist.remove(word)
     
-    print(poll_controller.user_learned_words)
+    print(poll.user_learned_words)
 
 learned_handler = PollHandler(learned, pass_chat_data=True, pass_user_data=True)
 dispatcher.add_handler(learned_handler)
@@ -88,8 +88,8 @@ def delete(update, context):
 
     word = message_text[1] if len(message_text) >= 2 else ''
 
-    if(word.lower() in poll_controller.user_wordlist):
-        poll_controller.user_wordlist.remove(word.lower())
+    if(word.lower() in poll.user_wordlist):
+        poll.user_wordlist.remove(word.lower())
         response = 'The word has been successfully deleted!'
     else:
         response = 'there\'s no ' + word + ' in the /wordlist \n example: \'/delete house\''
@@ -104,12 +104,12 @@ def word_addition(update, context):
 
     response = 'The word has been successfully added!'
 
-    if(update.message.text.lower() in poll_controller.user_wordlist):
+    if(update.message.text.lower() in poll.user_wordlist):
         response = 'ERROR: word is already in the list'
-    elif(not(poll_controller.get_options(update.message.text.lower()))):
+    elif(not(poll.get_options(update.message.text.lower()))):
         response = 'ERROR: there\'s no ' + update.message.text + ' in the dictionary'
     else:
-        poll_controller.user_wordlist.append(update.message.text.lower())
+        poll.user_wordlist.append(update.message.text.lower())
 
     context.bot.send_message(chat_id, response)
 
