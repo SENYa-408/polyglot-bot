@@ -15,7 +15,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 def start(update, context):
     chat_id = update.effective_chat.id
     
-    response = "Hey! I'm a polyglot bot and I'll help you remember new words :) \n test yourself whenever you want! \n /help for more info"
+    response = "Hey! I'm a Julius the horse and I'll help you remember new words :) \n test yourself whenever you want! \n /help for more info"
 
     context.bot.send_message(chat_id, response)
 
@@ -25,7 +25,7 @@ dispatcher.add_handler(start_handler)
 def help(update, context):
     chat_id = update.effective_chat.id
     
-    response = "Help info: \n Current supported languages: \n ru -> en \n\n Type the word of the learning language to add it to your wordlist \n /wordlist - check your wordlist \n /test - test random word from your wordlist \n /delete *word* - delete word form your wordlist"
+    response = "Help info: \n Current supported languages: \n en -> ru \n\n Type the word of the learning language to add it to your wordlist \n /wordlist - check your wordlist \n /test - test random word \n /delete *word* - delete word form your wordlist"
 
     context.bot.send_message(chat_id, response)
 
@@ -36,7 +36,7 @@ def wordlist(update, context):
     chat_id = update.effective_chat.id
     
     if not poll.user_wordlist:
-        response = 'Your wordlist is empty :( \n Type the word of the learning language to add it to your wordlist '
+        response = 'Your wordlist is empty :( \n Type the word in english to add it to your wordlist '
     else: 
         response = '\n'.join(poll.user_wordlist)
 
@@ -74,9 +74,7 @@ def learned(update, context):
         poll.user_learned_words.append(word)
 
         if word in poll.user_wordlist:
-            poll.user_wordlist.remove(word)
-    
-    print(poll.user_learned_words)
+            poll.user_wordlist.remove(word) 
 
 learned_handler = PollHandler(learned, pass_chat_data=True, pass_user_data=True)
 dispatcher.add_handler(learned_handler)
