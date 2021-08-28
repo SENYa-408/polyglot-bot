@@ -12,8 +12,6 @@ dispatcher = updater.dispatcher
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-# poll_controller.create_quiz()
-
 def start(update, context):
     chat_id = update.effective_chat.id
     

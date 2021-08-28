@@ -24,7 +24,6 @@ def create_quiz():
     correct_option_index = options.index(translate(word))
 
     # 7. return created list
-    print(word, options, correct_option_index)
     return word, options, correct_option_index
 
 def random_word():
