@@ -12,6 +12,8 @@ dispatcher = updater.dispatcher
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
+# poll_controller.create_quiz()
+
 def start(update, context):
     chat_id = update.effective_chat.id
     
@@ -49,7 +51,7 @@ def test(update, context):
     chat_id = update.effective_chat.id
     
     word, options, correct_option_index = poll_controller.create_quiz()
-    print(word, options, correct_option_index)
+
     context.bot.send_poll(chat_id, word, options, True, 'quiz', False, correct_option_index)
 
 test_handler = CommandHandler('test', test)
@@ -58,6 +60,7 @@ dispatcher.add_handler(test_handler)
 def learned(update, context):
     options = update.poll.options
     correct_option_id = update.poll.correct_option_id
+    word = update.poll.question
 
     counter = 0
     answer = False
@@ -70,10 +73,12 @@ def learned(update, context):
         counter += 1
 
     if answer:
-        poll_controller.user_learned_words.append(answer)
+        poll_controller.user_learned_words.append(word)
 
-    if answer in poll_controller.user_wordlist:
-        poll_controller.user_wordlist.remove(answer)
+        if word in poll_controller.user_wordlist:
+            poll_controller.user_wordlist.remove(word)
+    
+    print(poll_controller.user_learned_words)
 
 learned_handler = PollHandler(learned, pass_chat_data=True, pass_user_data=True)
 dispatcher.add_handler(learned_handler)
@@ -96,22 +101,22 @@ def delete(update, context):
 delete_handler = CommandHandler('delete', delete)
 dispatcher.add_handler(delete_handler)
 
-def echo(update, context):
+def word_addition(update, context):
     chat_id = update.effective_chat.id
 
-    response = update.message.text
+    response = 'The word has been successfully added!'
 
     if(update.message.text.lower() in poll_controller.user_wordlist):
         response = 'ERROR: word is already in the list'
-    elif(not(poll_controller.get_synonyms(update.message.text.lower()))):
+    elif(not(poll_controller.get_options(update.message.text.lower()))):
         response = 'ERROR: there\'s no ' + update.message.text + ' in the dictionary'
     else:
         poll_controller.user_wordlist.append(update.message.text.lower())
 
     context.bot.send_message(chat_id, response)
 
-echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
-dispatcher.add_handler(echo_handler)
+word_addition_handler = MessageHandler(Filters.text & (~Filters.command), word_addition)
+dispatcher.add_handler(word_addition_handler)
 
 updater.start_polling()
 updater.idle()
