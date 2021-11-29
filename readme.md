@@ -17,9 +17,9 @@ Telegram bot to help you improve your vocabulary
 
 `/test` - creates a quiz
 
-`/wordlist` - shows the wordlist
-`/delete *word*` - deletes word from the wordlist
-`*word*` - adds word to the wordlist
+`/wordlist` - shows the wordlist  
+`/delete *word*` - deletes word from the wordlist  
+`*word*` - adds word to the wordlist  
 
 # Example
 
