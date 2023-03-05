@@ -36,9 +36,11 @@ def add_word_to_wordlist(user_id: int, word: str):
     if(is_learned):
         user_learned_words.remove_user_learned_word(conn, user_id, word)
 
+    user = users.get_user(conn, user_id)
+
     # add user and word if don't exist
     users.add_user(conn, user_id)
-    words.add_word(conn, word, 'it')
+    words.add_word(conn, word, user[0][1])
 
     user_words.add_user_word(conn, user_id, word)
 

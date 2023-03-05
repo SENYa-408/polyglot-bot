@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, executor, types
+from aiogram.types import ParseMode
 
 from db import db_controller as db
 from api import wordreference as wr
@@ -25,8 +26,8 @@ async def start(message: types.Message):
 
 @dp.message_handler(commands=["help"])
 async def help(message: types.Message):
-    res = "Help info: \n\n Type the word of the learning language to add it to your wordlist \n /quiz - answer a quiz for a random word! (wordlist in priority) \n /wordlist - shows your wordlist \n /delete *word* - deletes *word* from your wordlist \n /dictionaries - check all dictionraies that i support \n /set - set your dictionary"
-    await message.reply(res)
+    res = "*Help info:* \n\n Type the word of the learning language to add it to your wordlist \n /quiz - answer a quiz for a random word! (wordlist in priority) \n /wordlist - shows your wordlist \n /delete *word* - deletes *word* from your wordlist \n /dictionaries - check all dictionraies that i support \n /set - set your dictionary"
+    await message.reply(res, parse_mode=ParseMode.MARKDOWN)
 
 @dp.message_handler(commands=["quiz"])
 async def quiz(message: types.Message):
@@ -56,11 +57,11 @@ async def delete(message: types.Message):
 async def dictionaries(message: types.Message):
     dicts = wr.get_dicts()
 
-    res = ""
+    res = "*Here's all languages I support:* \n"
     for el in dicts:
-        res += "(" + el + ") " + dicts[el]['from'] + " => " + dicts[el]['to'] + "\n"
+        res += "[[" + el[:2] + "]] " + dicts[el]['from'] + "\n"
 
-    await message.reply(res)
+    await message.reply(res, parse_mode=ParseMode.MARKDOWN)
 
 @dp.message_handler(commands=["set"])
 async def set(message: types.Message):

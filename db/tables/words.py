@@ -1,11 +1,11 @@
 from sqlite3 import Connection, IntegrityError
 
-def add_word(conn: Connection, word: str, language: str):
+def add_word(conn: Connection, word: str, dictionary: str):
     cur = conn.cursor()
     try:
         cur.execute('''
-                    INSERT OR IGNORE INTO words (word, language) VALUES (?, ?)
-                    ''', (word, language))
+                    INSERT OR IGNORE INTO words (word, dictionary) VALUES (?, ?)
+                    ''', (word, dictionary))
         conn.commit()
     except IntegrityError:
         return False
