@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher, executor, types
 
 from db import db_controller as db
+from api import wordreference as wr
 
 db.init()
 
@@ -53,7 +54,12 @@ async def delete(message: types.Message):
 
 @dp.message_handler(commands=["dictionaries"])
 async def dictionaries(message: types.Message):
-    res = "In work"
+    dicts = wr.get_dicts()
+
+    res = ""
+    for el in dicts:
+        res += dicts[el]['from'] + " => " + dicts[el]['to'] + "\n"
+
     await message.reply(res)
 
 @dp.message_handler(commands=["switch"])
