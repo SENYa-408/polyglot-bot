@@ -8,6 +8,17 @@ def add_user_word(conn: Connection, user_id: int, word: str):
     conn.commit()
     cur.close()
 
+def get_all_user_words(conn: Connection, user_id: int):
+    cur = conn.cursor()
+    cur.execute('''
+                SELECT * FROM user_words WHERE user_id = ?
+                ''', (user_id,))
+    res = cur.fetchall()
+    conn.commit()
+    cur.close()
+
+    return res
+
 def get_user_word(conn: Connection, user_id: int, word: str):
     cur = conn.cursor()
     cur.execute('''

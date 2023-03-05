@@ -45,8 +45,17 @@ async def quiz(message: types.Message):
 
 @dp.message_handler(commands=["wordlist"])
 async def wordlist(message: types.Message):
-    res = "In work"
-    await message.reply(res)
+    user_id = message.from_user.id
+
+    words = db.get_all_words(user_id)
+
+    learned_words_num = len(db.get_all_learned_words(user_id))
+    words_num = len(words)
+    
+    res = f"*Learned words: {learned_words_num} \nWordlist size: {words_num}* \n"
+    for word in words:
+        res += word + "\n"
+    await message.reply(res, parse_mode=ParseMode.MARKDOWN)
 
 @dp.message_handler(commands=["delete"])
 async def delete(message: types.Message):

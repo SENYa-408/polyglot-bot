@@ -27,6 +27,28 @@ def remove_user(user_id: int):
     users.remove_user(conn, user_id)
 
 # WORDLIST
+def get_all_learned_words(user_id: int):
+    conn = sqlite3.connect(DB_PATH)
+    
+    learned_words = user_learned_words.get_all_user_learned_words(conn, user_id)
+    res = []
+    for el in learned_words:
+        res.append(el[1])
+    
+    return res
+    
+
+def get_all_words(user_id: int):
+    conn = sqlite3.connect(DB_PATH)
+    
+    words = user_words.get_all_user_words(conn, user_id)
+    res = []
+    for el in words:
+        res.append(el[1])
+    
+    return res
+
+
 def get_random_words(num: int):
     conn = sqlite3.connect(DB_PATH)
     
