@@ -20,7 +20,7 @@ async def start(message: types.Message):
 
     db.add_user(user_id)
 
-    res = "Hey! I'm Julius the polyglot and I'll help you learn your new language! \n\n /help for more info"
+    res = "Hey! I'm Dizi the polyglot and I'll help you learn your new language! \n\n /help for more info"
     await message.reply(res)
 
 @dp.message_handler(commands=["help"])

@@ -1,4 +1,4 @@
-# **julius-polyglot-bot :horse:**
+# **dizi-polyglot-bot :earth_africa:**
 
 Telegram bot to help you improve your vocabulary
 **Created with** [aiogram](https://github.com/aiogram/aiogram)
@@ -7,7 +7,7 @@ Telegram bot to help you improve your vocabulary
 
 **(Currently off)**
 
-- Find **@julius-polyglot-bot** in telegram search
+- Find **@dizi-polyglot-bot** in telegram search
 - Click **Start**
 
 # Command list
@@ -23,7 +23,7 @@ Telegram bot to help you improve your vocabulary
 # Install
 
 1. Clone git repository  
-   `git clone https://github.com/SENYa-408/julius-polyglot-bot.git`
+   `git clone https://github.com/SENYa-408/dizi-polyglot-bot.git`
 2. Go to directory with project  
 3. Download all dependencies with cmd  
    `pip install aiogram python-dotenv`  
