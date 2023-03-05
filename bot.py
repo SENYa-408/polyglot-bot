@@ -50,8 +50,13 @@ async def wordlist(message: types.Message):
 
 @dp.message_handler(commands=["delete"])
 async def delete(message: types.Message):
-    res = "In work"
-    await message.reply(res)
+    user_id = message.from_user.id
+    word = message.get_args()
+
+    db.remove_word_from_wordlist(user_id, word)
+
+    res = f"Removed *{word}* from your wordlist"
+    await message.reply(res, parse_mode=ParseMode.MARKDOWN)
 
 @dp.message_handler(commands=["dictionaries"])
 async def dictionaries(message: types.Message):
@@ -70,7 +75,7 @@ async def set(message: types.Message):
     is_dict_correct = wr.check_dict(dict_lang)
 
     if is_dict_correct:
-        db.update_user_dict(user_id, dict_lang)
+        db.update_user_dict(user_id, dict_lang + 'en')
         res = f"Dictionary {dict_lang} selected"
     else:
         res = "This dictionary doesn't exist, see /dictionaries" 
@@ -82,10 +87,15 @@ async def word(message: types.Message):
     user_id = message.from_user.id
     word = message.text
 
-    db.add_word_to_wordlist(user_id, word)
+    dict_code = db.get_dict_code(user_id)
+    is_word_correct = wr.get_translation(dict_code, word)
 
-    res = f"Added *{word}* to your wordlist"
-    await message.reply(res)
+    if is_word_correct:
+        db.add_word_to_wordlist(user_id, word)
+        res = f"Added *{word}* to your wordlist"
+    else:
+        res = f"There's no *{word}* in the dictionary"
+    await message.reply(res, parse_mode=ParseMode.MARKDOWN)
 
 
 if __name__ == '__main__':

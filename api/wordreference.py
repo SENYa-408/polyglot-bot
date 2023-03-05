@@ -17,6 +17,12 @@ def check_dict(dict_lang: str):
     
     return False
 
-def get_translation(lang: str, word: str):
-    wr = WordReference(lang)
-    return wr.translate(word)
+def get_translation(dict_code: str, word: str):
+    wr = WordReference(dict_code)
+
+    try:
+        translation = wr.translate(word)
+    except NameError:
+        translation = False
+
+    return translation

@@ -12,9 +12,11 @@ def add_user(user_id: int):
     conn = sqlite3.connect(DB_PATH)
     users.add_user(conn, user_id)
 
-def get_user(user_id: int):
+def get_dict_code(user_id: int):
     conn = sqlite3.connect(DB_PATH)
-    users.get_user(conn, user_id)
+    user = users.get_user(conn, user_id)
+
+    return user[0][1]
 
 def update_user_dict(user_id: int, value: str):
     conn = sqlite3.connect(DB_PATH)
