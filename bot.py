@@ -25,7 +25,7 @@ async def start(message: types.Message):
 
 @dp.message_handler(commands=["help"])
 async def help(message: types.Message):
-    res = "Help info: \n\n Type the word of the learning language to add it to your wordlist \n /quiz - answer a quiz for a random word! (wordlist in priority) \n /wordlist - shows your wordlist \n /delete *word* - deletes *word* from your wordlist \n /dictionaries - check all dictionraies that i support \n /switch - change your dictinary"
+    res = "Help info: \n\n Type the word of the learning language to add it to your wordlist \n /quiz - answer a quiz for a random word! (wordlist in priority) \n /wordlist - shows your wordlist \n /delete *word* - deletes *word* from your wordlist \n /dictionaries - check all dictionraies that i support \n /set - set your dictionary"
     await message.reply(res)
 
 @dp.message_handler(commands=["quiz"])
@@ -58,13 +58,22 @@ async def dictionaries(message: types.Message):
 
     res = ""
     for el in dicts:
-        res += dicts[el]['from'] + " => " + dicts[el]['to'] + "\n"
+        res += "(" + el + ") " + dicts[el]['from'] + " => " + dicts[el]['to'] + "\n"
 
     await message.reply(res)
 
-@dp.message_handler(commands=["switch"])
-async def switch(message: types.Message):
-    res = "In work"
+@dp.message_handler(commands=["set"])
+async def set(message: types.Message):
+    user_id = message.from_user.id
+    dict_lang = message.get_args()
+    is_dict_correct = wr.check_dict(dict_lang)
+
+    if is_dict_correct:
+        db.update_user_dict(user_id, dict_lang)
+        res = f"Dictionary {dict_lang} selected"
+    else:
+        res = "This dictionary doesn't exist, see /dictionaries" 
+
     await message.reply(res)
 
 @dp.message_handler()

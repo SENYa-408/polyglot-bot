@@ -19,6 +19,13 @@ def get_user(conn: Connection, user_id: int):
 
     return res
 
+def update_user(conn: Connection, user_id: int, value: str, column: str):
+    cur = conn.cursor()
+    sql = f"UPDATE users SET {column} = ? WHERE user_id = ?"
+    cur.execute(sql, (value, user_id))
+    conn.commit()
+    cur.close()
+
 def remove_user(conn: Connection, user_id: int):
     cur = conn.cursor()
     cur.execute('''

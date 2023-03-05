@@ -6,6 +6,7 @@ def init_tables(conn: Connection):
     cur.execute('''
                 CREATE TABLE IF NOT EXISTS users (
                     user_id INTEGER PRIMARY KEY,
+                    dictionary VARCHAR(255),
                     quizzes_answered INTEGER,
                     quizzes_answered_correct INTEGER
                 )
@@ -14,7 +15,7 @@ def init_tables(conn: Connection):
     cur.execute('''
                 CREATE TABLE IF NOT EXISTS words (
                     word VARCHAR(255) PRIMARY KEY,
-                    language VARCHAR(255) NOT NULL
+                    dictionary VARCHAR(255) NOT NULL
                 )
                 ''')
 
@@ -40,4 +41,3 @@ def init_tables(conn: Connection):
 
     conn.commit()
     cur.close()
-    conn.close()

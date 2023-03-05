@@ -14,6 +14,10 @@ def get_user(user_id: int):
     conn = sqlite3.connect('db/database.db')
     users.get_user(conn, user_id)
 
+def update_user_dict(user_id: int, value: str):
+    conn = sqlite3.connect('db/database.db')
+    users.update_user(conn, user_id, value, 'dictionary')
+
 def remove_user(user_id: int):
     conn = sqlite3.connect('db/database.db')
     users.remove_user(conn, user_id)
