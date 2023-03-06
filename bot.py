@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
-from aiogram import Bot, Dispatcher, executor, types
-from aiogram.types import ParseMode
+from aiogram import Bot, Dispatcher, executor
+from aiogram.types import ParseMode, Message
 
 from db import db_controller as db
 from api import wordreference as wr
@@ -16,7 +16,7 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
 @dp.message_handler(commands=["start"])
-async def start(message: types.Message):
+async def start(message: Message):
     user_id = message.from_user.id
 
     db.add_user(user_id)
@@ -25,12 +25,12 @@ async def start(message: types.Message):
     await message.reply(res)
 
 @dp.message_handler(commands=["help"])
-async def help(message: types.Message):
+async def help(message: Message):
     res = "*Help info:* \n\n Type the word of the learning language to add it to your wordlist \n /quiz - answer a quiz for a random word! (wordlist in priority) \n /wordlist - shows your wordlist \n /delete *word* - deletes *word* from your wordlist \n /dictionaries - check all dictionraies that i support \n /set - set your dictionary"
     await message.reply(res, parse_mode=ParseMode.MARKDOWN)
 
 @dp.message_handler(commands=["quiz"])
-async def quiz(message: types.Message):
+async def quiz(message: Message):
     question = "Your answer?"
     options = ["A", "B", "C", "D"]
     explanation = "The right answer is C"
@@ -44,7 +44,7 @@ async def quiz(message: types.Message):
     )
 
 @dp.message_handler(commands=["wordlist"])
-async def wordlist(message: types.Message):
+async def wordlist(message: Message):
     user_id = message.from_user.id
 
     words = db.get_all_words(user_id)
@@ -58,7 +58,7 @@ async def wordlist(message: types.Message):
     await message.reply(res, parse_mode=ParseMode.MARKDOWN)
 
 @dp.message_handler(commands=["delete"])
-async def delete(message: types.Message):
+async def delete(message: Message):
     user_id = message.from_user.id
     word = message.get_args()
 
@@ -68,7 +68,7 @@ async def delete(message: types.Message):
     await message.reply(res, parse_mode=ParseMode.MARKDOWN)
 
 @dp.message_handler(commands=["dictionaries"])
-async def dictionaries(message: types.Message):
+async def dictionaries(message: Message):
     dicts = wr.get_dicts()
 
     res = "*Here's all languages I support:* \n"
@@ -78,7 +78,7 @@ async def dictionaries(message: types.Message):
     await message.reply(res, parse_mode=ParseMode.MARKDOWN)
 
 @dp.message_handler(commands=["set"])
-async def set(message: types.Message):
+async def set(message: Message):
     user_id = message.from_user.id
     dict_lang = message.get_args()
     is_dict_correct = wr.check_dict(dict_lang)
@@ -92,7 +92,7 @@ async def set(message: types.Message):
     await message.reply(res)
 
 @dp.message_handler()
-async def word(message: types.Message):
+async def word(message: Message):
     user_id = message.from_user.id
     word = message.text
 
