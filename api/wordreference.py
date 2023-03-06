@@ -24,9 +24,8 @@ def get_translation(dict_code: str, words: [str]):
     for word in words:
         try:
             translation = wr.translate(word)
-        except NameError:
-            return False
-        finally:
             res.append(translation['translations'][0]['entries'][0]['to_word'][0]['meaning'])
+        except NameError:
+            res = False
 
     return res
