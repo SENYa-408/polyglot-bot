@@ -17,12 +17,16 @@ def check_dict(dict_lang: str):
     
     return False
 
-def get_translation(dict_code: str, word: str):
-    wr = WordReference(dict_code)
+def get_translation(dict_code: str, words: [str]):
+    wr = WordReference(dict_code + 'en')
 
-    try:
-        translation = wr.translate(word)
-    except NameError:
-        translation = False
+    res = []
+    for word in words:
+        try:
+            translation = wr.translate(word)
+        except NameError:
+            return False
+        finally:
+            res.append(translation['translations'][0]['entries'][0]['to_word'][0]['meaning'])
 
-    return translation
+    return res

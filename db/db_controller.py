@@ -27,7 +27,7 @@ def remove_user(user_id: int):
     users.remove_user(conn, user_id)
 
 # WORDLIST
-def get_all_learned_words(user_id: int):
+def get_all_user_learned_words(user_id: int):
     conn = sqlite3.connect(DB_PATH)
     
     learned_words = user_learned_words.get_all_user_learned_words(conn, user_id)
@@ -37,8 +37,7 @@ def get_all_learned_words(user_id: int):
     
     return res
     
-
-def get_all_words(user_id: int):
+def get_all_user_words(user_id: int):
     conn = sqlite3.connect(DB_PATH)
     
     words = user_words.get_all_user_words(conn, user_id)
@@ -48,11 +47,11 @@ def get_all_words(user_id: int):
     
     return res
 
-
-def get_random_words(num: int):
+def get_random_words(user_id: int, num: int):
     conn = sqlite3.connect(DB_PATH)
     
-    res = words.get_random_words(conn, num) 
+    res = user_words.get_random_user_words(conn, user_id, num)
+    res = list(map(lambda el : el[1], res))
 
     return res
 

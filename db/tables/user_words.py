@@ -19,6 +19,17 @@ def get_all_user_words(conn: Connection, user_id: int):
 
     return res
 
+def get_random_user_words(conn: Connection, user_id: int, num: int):
+    cur = conn.cursor()
+    cur.execute('''
+                SELECT * FROM user_words WHERE user_id = ? ORDER BY RANDOM() LIMIT ?
+                ''', (user_id, num))
+    res = cur.fetchall()
+    conn.commit()
+    cur.close()
+
+    return res
+
 def get_user_word(conn: Connection, user_id: int, word: str):
     cur = conn.cursor()
     cur.execute('''
